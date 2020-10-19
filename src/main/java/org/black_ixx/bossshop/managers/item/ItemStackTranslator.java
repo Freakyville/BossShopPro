@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.tags.CustomItemTagContainer;
 import org.bukkit.inventory.meta.tags.ItemTagType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -39,7 +40,16 @@ public class ItemStackTranslator {
                     for (int i = 0; i < lore.size(); i++) {
                         lore.set(i, ClassManager.manager.getStringManager().transform(lore.get(i), buy, shop, holder, target));
                     }
-                    meta.setLore(splitLore(lore, ClassManager.manager.getSettings().getMaxLineLength(), final_version));
+                    List<String> lineChangeLore = new ArrayList<>();
+                    lore.forEach(i -> {
+                        if (i.contains("#")) {
+                            String[] split = i.split("#");
+                            lineChangeLore.addAll(Arrays.asList(split));
+                        } else {
+                            lineChangeLore.add(i);
+                        }
+                    });
+                    meta.setLore(splitLore(lineChangeLore, ClassManager.manager.getSettings().getMaxLineLength(), final_version));
                 }
 
 
