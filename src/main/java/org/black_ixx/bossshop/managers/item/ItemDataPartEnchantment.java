@@ -1,6 +1,7 @@
 package org.black_ixx.bossshop.managers.item;
 
 import com.vk2gpz.tokenenchant.api.TokenEnchantAPI;
+import n3kas.ae.api.AEAPI;
 import org.black_ixx.bossshop.core.BSBuy;
 import org.black_ixx.bossshop.managers.ClassManager;
 import org.black_ixx.bossshop.managers.misc.InputReader;
@@ -35,10 +36,14 @@ public class ItemDataPartEnchantment extends ItemDataPart {
 
         Enchantment e = InputReader.readEnchantment(enchantment);
 
-        if (e == null && Bukkit.getPluginManager().isPluginEnabled("TokenEnchant")) {
-            TokenEnchantAPI te = TokenEnchantAPI.getInstance();
-            item = te.enchant(null, item, enchantment, level, true, 0, false);
-            return item;
+        if (e == null) {
+            if (Bukkit.getPluginManager().isPluginEnabled("AdvancedEnchantments") && AEAPI.isAnEnchantment(enchantment)) {
+                return AEAPI.applyEnchant(enchantment, level, item);
+            } else if (Bukkit.getPluginManager().isPluginEnabled("TokenEnchant")) {
+                TokenEnchantAPI te = TokenEnchantAPI.getInstance();
+                item = te.enchant(null, item, enchantment, level, true, 0, false);
+                return item;
+            }
         }
 
         if (e == null) {
@@ -98,7 +103,9 @@ public class ItemDataPartEnchantment extends ItemDataPart {
         if (!containsEnchantments(shop_item.getEnchantments(), player_item.getEnchantments(), buy)) {
             return false;
         }
-
+        if (!checkAdvancedEnchantments(shop_item, player_item)) {
+            return false;
+        }
 
         //enchantmentbook enchantments
         if (shop_item.getItemMeta() instanceof EnchantmentStorageMeta) {
@@ -114,7 +121,6 @@ public class ItemDataPartEnchantment extends ItemDataPart {
             }
 
         }
-
 
         return true;
     }
@@ -140,6 +146,27 @@ public class ItemDataPartEnchantment extends ItemDataPart {
             }
         }
 
+        return true;
+    }
+
+    private boolean checkAdvancedEnchantments(ItemStack shopItem, ItemStack playerItem) {
+        if (!Bukkit.getPluginManager().isPluginEnabled("AdvancedEnchantments")) {
+            return true;
+        }
+        Map<String, Integer> enchantMap = AEAPI.getEnchantmentsOnItem(shopItem);
+        if (enchantMap.size() == 0) {
+            return true;
+        }
+        for (Map.Entry<String, Integer> entry : enchantMap.entrySet()) {
+            String enchant = entry.getKey();
+            Integer level = entry.getValue();
+            if (!AEAPI.hasCustomEnchant(enchant, playerItem)) {
+                return false;
+            }
+            if (level > AEAPI.getEnchantLevel(enchant, playerItem)) {
+                return false;
+            }
+        }
         return true;
     }
 

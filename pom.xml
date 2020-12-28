@@ -57,6 +57,10 @@
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
+		<repository>
+			<id>freakyville</id>
+			<url>https://freakyville.appspot.com/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -192,6 +196,14 @@
 			<groupId>com.vk2gpz.tokenenchant</groupId>
 			<artifactId>TokenEnchantAPI</artifactId>
 			<version>15.3.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Adds advanced enchantment support -->
+		<dependency>
+			<groupId>io.github.freakyville</groupId>
+			<artifactId>AdvancedEnchantments-API</artifactId>
+			<version>8.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 
